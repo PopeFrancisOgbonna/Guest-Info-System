@@ -1,0 +1,58 @@
+.hide{
+    display: none;
+}
+/* Index page css codes */
+
+/* Registration page css code */
+.side{
+    background: linear-gradient(to right, #44ccdd,#4d4d4d);
+    padding: 5px;
+    color: #fff;
+}
+.side h2{
+    text-transform: uppercase;
+    padding: 2px;
+}
+.side p{
+    padding: 5px;
+}
+hr{
+    max-width: 450px;
+    border:3px solid rgb(196, 143, 143);
+    border-radius: 5px;
+}
+.form{
+    max-width: 450px;
+    padding: 5px;
+}
+.card{
+    max-width: 600px;
+}
+.gside{
+    background: linear-gradient(to right, #44ccdd,#4d4d4d);
+    color: #fff;
+}
+/* login page */
+#login{
+    border: 3px solid #4d4d4d;
+    border-radius: 5px;
+    padding: 5px;
+}
+/* info page */
+#icon{
+    border-radius: 50%;
+    padding: 5px;
+    border:2px solid #201313;
+    width: 120px;
+    height: auto;
+    margin: 4px 0 2px 0;
+}
+#ops{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+#ops .btn{
+    margin: 3px;
+    width: auto;
+}

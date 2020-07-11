@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('partials/head') %>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <nav class="navbar navbar-dark navbar-expand-md bg-primary">
+                <a href="/" class="navbar-brand">
+                    <img src="img/logo.png" alt="logo" width="48" height="48" class="rounded">
+                    Xpress Dreams
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navcontent" aria-controls="navcontent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                  </button>
+                <div class="collapse navbar-collapse" id="navcontent">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="navbar-item">
+                            <a href="/" class="nav-link ">Home</a>
+                        </li>
+                        <li class="navbar-item">
+                            <a href="/service" class="nav-link ">Services</a>
+                        </li>
+                        <li class="navbar-item">
+                            <a href="/about"class="nav-link ">About</a>
+                        </li>
+                        <li class="navbar-item">
+                            <a href="/contact" class="nav-link ">Contact</a>
+                        </li>
+                        <li class="navbar-item">
+                            <a href="/login"  class="nav-link active ">Login</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+       
+        <h1 class="text-center">Login </h1>
+        <form method="POST" action="/login" class="form mx-auto" id="login">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" name="name" class="form-control" id="lName" placeholder="Enter Name">
+                
+            </div>
+            <div class="form-group">
+                <label for="pass">Password</label>
+                <input type="password" name="password" class="form-control" id="pass" placeholder="Enter password">
+            </div>
+           
+            <div class="form-group form-check">
+                <input type="checkbox" value="isRemember" class="form-check-input" id="rem">
+                <label class="form-check-label" for="rem">Remember Me.</label> <br>
+                <span>Don't have Account? <a href="/register">Rgister Here</a></span>
+            </div>
+            
+            <button type="submit" id="loginbtn" class="btn btn-primary">Login</button>
+        </form>
+
+        <footer>
+            <%- include('partials/footer') %> 
+        </footer>
+    </div>
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <!-- <script>
+        const login = document.querySelector('#loginbtn');
+        const chk = document.querySelector('#rem');
+        const password = document.querySelector('#pass');
+        const name = document.querySelector('#lName');
+        const isRememberMe = () =>{
+            if(chk.checked &&( password.value && name.value) !==''){
+                localStorage.checkbox = chk.value;
+                localStorage.password =password.value;
+                localStorage.name = name.value;
+            }else{
+                localStorage.checkbox = '';
+                localStorage.password = '';
+                localStorage.name = '';
+            }
+        }
+        login.addEventListener('click', (e) =>{
+           isRememberMe();
+           let data = {
+               name:'',
+               password: ''
+           }
+           
+           if((localStorage.name || localStorage.passwor) ==''){
+               data.name = name.value;
+               data.password = password.value;
+               
+           }else{
+               data.name = 'sunny';
+               data.password = localStorage.password;
+               alert(data);
+           }
+           
+        })
+    </script> -->
+</body>
+</html>

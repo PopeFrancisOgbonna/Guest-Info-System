@@ -3,7 +3,6 @@ const mysql = require('mysql');
 const ejs = require('ejs');
 const bodyParser = require('body-parser');
 const nodeMailer = require('nodemailer');
-const { response } = require('express');
 const PORT = process.env.PORT;
 
 const app = express();

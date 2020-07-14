@@ -1,16 +1,21 @@
 const express = require('express');
-const mysql = require('mysql');
+// const mysql = require('mysql');
+const {Client} =require('pg');
 const ejs = require('ejs');
 const bodyParser = require('body-parser');
 const nodeMailer = require('nodemailer');
 const PORT = process.env.PORT;
 
 const app = express();
-const conn = mysql.createConnection({
-    host:'localhost',
-    user:'root',
-    password:'',
-    database:'guestInfo'
+// const conn = mysql.createConnection({
+//     host:'localhost',
+//     user:'root',
+//     password:'',
+//     database:'guestInfo'
+// });
+const client = new Client({
+    connectionString:process.env.DATABASE_URL,
+    ssl:true
 });
 
 app.use(express.static('public'));
@@ -42,6 +47,9 @@ app.get('/register',(req,res)=>{
 app.get('/login',(req,res)=>{
     res.render('login')
 });
+app.get('/admin',(req, res)=>{
+    res.render('admin')
+});
 let r ;
 app.get('/info',(req,res)=>{
     res.render('info',{name:r[0].Name});
@@ -57,7 +65,8 @@ app.post('/register',(req, res)=>{
         if(password !== confirm){
             return res.send('Error: Password do not Match!')
         }else{
-            conn.query('insert into staff (Name,Post,Password) values (?,?,?)',[name, post, password],(error,result)=>{
+            client.connect();
+            client.query('insert into staff (Name,Post,Password) values (?,?,?)',[name, post, password],(error,result)=>{
                 console.log(result);
                 if(result){
                 res.status(200).send('Registration was Successfull!!');
@@ -65,11 +74,36 @@ app.post('/register',(req, res)=>{
                     console.log(error);
                 }
             });
+            client.end();
         }
     }
 });
 //Staff Registeration by Admin
 app.post('/addstaff',(req, res)=>{
+    const name = req.body.name;
+    const password = req.body.password;
+    const confirm = req.body.password1;
+    const post =req.body.post;
+    if(name && password ){
+            // let query = 'insert into user (name,password) values (?,?)';
+        if(password !== confirm){
+            return res.send('Error: Password do not Match!')
+        }else{
+            client.connect();
+            client.query('insert into staff (Name,Post,Password) values (?,?,?)',[name, post, password],(error,result)=>{
+                console.log(result);
+                if(result){
+                res.status(200).send('Registration was Successfull!!');
+                }else{
+                    console.log(error);
+                }
+            });
+            client.end();
+        }
+    }
+});
+//guest Registration by staff
+app.post('/addguest',(req, res)=>{
     const name = req.body.name;
     const email = req.body.email;
     const phone = req.body.phone;
@@ -80,8 +114,8 @@ app.post('/addstaff',(req, res)=>{
     const date = req.body.date;
     if(name && email && phone && whom && purpose && arrival && depart && date){
         let query = 'insert into guest (Name,Email,Phone,Whom_To_See,Purpose_Of_Visit,Arrival_Time,Depature_Time,Date_Visited) values (?,?,?,?,?,?,?,?)';
-        
-        conn.query(query,[name, email, phone, whom,purpose,arrival,depart,date],(error,result)=>{
+        client.connect();
+        client.query(query,[name, email, phone, whom,purpose,arrival,depart,date],(error,result)=>{
             console.log(result);
             if(result){
             res.status(200).send('Registration was Successfull!!');
@@ -89,6 +123,7 @@ app.post('/addstaff',(req, res)=>{
                 console.log(error);
             }
         });
+        client.end();
     }
 });
 var table;
@@ -97,7 +132,8 @@ app.post('/login',(req, res)=>{
     const name = req.body.name;
     const password = req.body.password;
     if(name && password){
-        conn.query('select * from staff where name=? and password=?',[name,password],(error, result,fields)=>{
+        client.connect();
+        client.query('select * from staff where name=? and password=?',[name,password],(error, result,fields)=>{
            if(error) throw error; 
            console.log(result);
            if(result.length){
@@ -108,6 +144,7 @@ app.post('/login',(req, res)=>{
                res.send('Incorrect name and password!');
            }
         }); 
+        client.end();
     }else{
         res.send('Please fillout all Fields');
     }
@@ -115,7 +152,8 @@ app.post('/login',(req, res)=>{
 //Get all Guest from Database
 app.get('/users',(req, res)=>{
     let query ="select Name,Email,Phone,Whom_To_See as 'Whom To See',Purpose_Of_Visit as 'Purpose of Visit',Arrival_Time as'Arrival Time',Depature_Time as 'Departure Time', (select DATE_FORMAT(Date_Visited,'%D-%M-%Y')) as 'Date' from guest";
-    conn.query(query,(err, result)=>{
+    client.connect();
+    client.query(query,(err, result)=>{
         console.log(result);
         if(err){return res.send(err);}
         if(result.length){
@@ -123,20 +161,23 @@ app.get('/users',(req, res)=>{
         }else{
             res.status(404).send('Error getting users');
         }
-    })
+    });
+    client.end();
 })
 //Get a specific Guest's Information
 app.get('/users/:name',(req, res)=>{
     const {name} = req.params;
     if(name){
-        conn.query('select * from guest where name=?',[name],(err, result)=>{
+        client.connect();
+        client.query('select * from guest where name=?',[name],(err, result)=>{
             if(result.length){
                 console.log(result)
                 res.status(200).json(result);
             }else{
                 res.status(400).json('')
             }
-        })
+        });
+        client.end();
     }
 });
 //Sending Mail to guests'

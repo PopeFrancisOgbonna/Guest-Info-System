@@ -228,7 +228,7 @@ registerGuest.addEventListener('click', (e) =>{
             departure,
             date
         }
-        fetch('/addstaff',{
+        fetch('/addguest',{
             method:'post',
             headers:{"content-type":"application/json"},
             body:JSON.stringify(data)

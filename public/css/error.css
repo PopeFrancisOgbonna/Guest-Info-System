@@ -1,0 +1,11 @@
+.cover{
+    max-width: 450px;
+    margin: 2px auto;
+}
+.outer{
+    background-color: #F2F2F2;
+}
+.error{
+    color: red;
+    font-size: 1.5em;
+}

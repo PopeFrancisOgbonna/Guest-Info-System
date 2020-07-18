@@ -7,6 +7,13 @@
     <div class="container">
         <header>
             <%- include('partials/navigation') %> 
+            <style>
+                .mail{
+                    border: 2px solid #8f8e8e;
+                    padding: 5px;
+                    border-radius: 10px;
+                }
+            </style>
         </header>
         <div class="row">
             <div class="col-md-3 col-sm-12">
@@ -48,6 +55,10 @@
                                         <div class="form-group">
                                             <label for="regPass">Password</label>
                                             <input type="password" name="password" placeholder="Enter password" class="form-control" id="regPass">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="password1">confirm Password</label>
+                                            <input type="password" name="password1" placeholder="Enter password" class="form-control" id="regPass1">
                                         </div>
                                         <p class="staffWarning"></p>
                                         <button type="submit" id="staffRegSubmit" class="btn btn-primary">Register</button>
@@ -135,24 +146,26 @@
                             <table id="Table" class="table table-striped"></table>
                        </div>
                        <div id="contactDetails" class="hide">
-                           <form method="POST" action="/mail">
+                           <h1 class="text-center">Get in touch with Guest.</h1>
+                           <form method="POST" class="mail">
                                <div class="form-group">
                                    <div class="row">
                                        <div class="col-md-6 col-sm-12">
                                            <label for="to">Recipient Email</label>
-                                           <input type="email" name="to" placeholder="Guest's Email" required class="form-control">
+                                           <input type="email" name="to" placeholder="Guest's Email" id="to" required class="form-control">
                                        </div>
                                        <div class="col-md-6 col-sm-12">
                                            <label for="subject">Subject</label>
-                                           <input type="text" name="subject" placeholder="Enter Subject" required class="form-control">
+                                           <input type="text" name="subject" placeholder="Enter Subject" id="subject" required class="form-control">
                                        </div>
                                    </div>
                                </div>
                                <div class="form-group">
                                    <label for="text">Message</label>
-                                   <input type="text" name="text" placeholder="Enter Message" required class="form-control">
+                                   <textarea name="text" id="message"  placeholder="Enter Message"  cols="20" rows="5" required class="form-control"></textarea>
                                </div>
-                               <button type="submit" class="btn btn-primary btn-lg">Send</button>
+                               <p id="notice"></p>
+                               <button type="button" id="sendMail" class="btn btn-primary btn-lg">Send</button>
                            </form>
                        </div>
                     </div>

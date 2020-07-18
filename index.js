@@ -1,27 +1,34 @@
 const express = require('express');
-// const mysql = require('mysql');
-const {Client} =require('pg');
 const ejs = require('ejs');
 const bodyParser = require('body-parser');
-const nodeMailer = require('nodemailer');
+const cors = require('cors');
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const PORT = process.env.PORT;
+const knex = require('knex');
+const router = require('./controlers/route');
+const registerHandle = require('./models/registerHandle');
+const loginHandle = require('./models/loginHandle');
+const viewGuest = require('./models/handleGuest');
+
+const db = knex({
+    client: 'pg',
+    connection: {
+      host : '127.0.0.1',
+      user : 'postgres',
+      password : 'root',
+      database : 'guestInfo'
+    }
+});
 
 const app = express();
-// const conn = mysql.createConnection({
-//     host:'localhost',
-//     user:'root',
-//     password:'',
-//     database:'guestInfo'
-// });
-const client = new Client({
-    connectionString:process.env.DATABASE_URL,
-    ssl:true
-});
 
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
+app.use(cors());
+app.use('/',router);
 
 //image file (static files)
 app.use('/img',express.static(__dirname + 'public/img'));
@@ -29,187 +36,77 @@ app.use('/js',express.static(__dirname + 'public/js'))
 // const head = require(__dirname + 'public/js/head');
 
 //Routes
-app.get('/',(req,res)=>{
-    res.render('index',{text:'Relaxation and Comfort',company:'Xpress Dreams Technology',pass:'hello' });
-});
-app.get('/about',(req, res)=>{
-    res.render('about');
-});
-app.get('/contact',(req, res)=>{
-    res.render('contact');
-});
-app.get('/service',(req, res)=>{
-    res.render('service');
-});
-app.get('/register',(req,res)=>{
-    res.render('register')
-});
-app.get('/login',(req,res)=>{
-    res.render('login')
-});
-app.get('/admin',(req, res)=>{
+
+let visitors;
+let members;
+app.get('/dashboard', (req, res) =>{
     res.render('admin')
-});
-let r ;
-app.get('/info',(req,res)=>{
-    res.render('info',{name:r[0].Name});
 })
+let r;
+router.get('/info',(req,res)=>{
+    res.render('info',{name:r.name});
+})
+// app.get('*',(req, res) =>{
+//     res.status(404).render('errors');
+// })
 // Port request
 app.post('/register',(req, res)=>{
-    const name = req.body.name;
-    const password = req.body.password;
-    const confirm = req.body.password1;
-    const post ='Staff';
-    if(name && password ){
-            // let query = 'insert into user (name,password) values (?,?)';
-        if(password !== confirm){
-            return res.send('Error: Password do not Match!')
-        }else{
-            client.connect();
-            client.query('insert into staff (Name,Post,Password) values (?,?,?)',[name, post, password],(error,result)=>{
-                console.log(result);
-                if(result){
-                res.status(200).send('Registration was Successfull!!');
-                }else{
-                    console.log(error);
-                }
-            });
-            client.end();
-        }
-    }
+   registerHandle.register(req,res,db)
 });
-//Staff Registeration by Admin
+// Staff Registration by Admin Postgress Database
 app.post('/addstaff',(req, res)=>{
-    const name = req.body.name;
-    const password = req.body.password;
-    const confirm = req.body.password1;
-    const post =req.body.post;
-    if(name && password ){
-            // let query = 'insert into user (name,password) values (?,?)';
-        if(password !== confirm){
-            return res.send('Error: Password do not Match!')
-        }else{
-            client.connect();
-            client.query('insert into staff (Name,Post,Password) values (?,?,?)',[name, post, password],(error,result)=>{
-                console.log(result);
-                if(result){
-                res.status(200).send('Registration was Successfull!!');
-                }else{
-                    console.log(error);
-                }
-            });
-            client.end();
-        }
-    }
+   registerHandle.regStaff(req, res, db);
 });
-//guest Registration by staff
+// Guest Registration by Staff Using Postgress Database
 app.post('/addguest',(req, res)=>{
-    const name = req.body.name;
-    const email = req.body.email;
-    const phone = req.body.phone;
-    const whom = req.body.whomtosee;
-    const purpose = req.body.purpose;
-    const arrival = req.body.arrive;
-    const depart = req.body.departure;
-    const date = req.body.date;
-    if(name && email && phone && whom && purpose && arrival && depart && date){
-        let query = 'insert into guest (Name,Email,Phone,Whom_To_See,Purpose_Of_Visit,Arrival_Time,Depature_Time,Date_Visited) values (?,?,?,?,?,?,?,?)';
-        client.connect();
-        client.query(query,[name, email, phone, whom,purpose,arrival,depart,date],(error,result)=>{
-            console.log(result);
-            if(result){
-            res.status(200).send('Registration was Successfull!!');
-            }else{
-                console.log(error);
-            }
-        });
-        client.end();
-    }
+    registerHandle.addGuest(req, res, db);
 });
 var table;
-//login verification
-app.post('/login',(req, res)=>{
-    const name = req.body.name;
-    const password = req.body.password;
-    if(name && password){
-        client.connect();
-        client.query('select * from staff where name=? and password=?',[name,password],(error, result,fields)=>{
-           if(error) throw error; 
-           console.log(result);
-           if(result.length){
-                r = result;
-               table = result;
-                res.redirect(200,'info');
-           }else{
-               res.send('Incorrect name and password!');
-           }
-        }); 
-        client.end();
-    }else{
-        res.send('Please fillout all Fields');
-    }
-});
+//Postgress database  
+app.post('/login', (req, res) =>{
+    loginHandle.login(req, res, db);
+})
 //Get all Guest from Database
 app.get('/users',(req, res)=>{
-    let query ="select Name,Email,Phone,Whom_To_See as 'Whom To See',Purpose_Of_Visit as 'Purpose of Visit',Arrival_Time as'Arrival Time',Depature_Time as 'Departure Time', (select DATE_FORMAT(Date_Visited,'%D-%M-%Y')) as 'Date' from guest";
-    client.connect();
-    client.query(query,(err, result)=>{
-        console.log(result);
-        if(err){return res.send(err);}
-        if(result.length){
-            res.status(200).json(result);
-        }else{
-            res.status(404).send('Error getting users');
-        }
-    });
-    client.end();
+    viewGuest.guests(req, res, db);
 })
 //Get a specific Guest's Information
 app.get('/users/:name',(req, res)=>{
-    const {name} = req.params;
-    if(name){
-        client.connect();
-        client.query('select * from guest where name=?',[name],(err, result)=>{
-            if(result.length){
-                console.log(result)
-                res.status(200).json(result);
-            }else{
-                res.status(400).json('')
-            }
-        });
-        client.end();
-    }
+   viewGuest.search(req, res, db);
 });
 //Sending Mail to guests'
 app.post('/mail',(req, res) =>{
-    const to = req.body.to;
-    const subject = req.body.subject;
-    const text = req.body.text;
+    viewGuest.mail(req, res, sgMail);
+});
+//Admin login
+app.post('/admin', (req, res) =>{
+    loginHandle.adminlogin(req, res, db);
+});
+//Get Number of staff/members
+app.get('/members',(req, res) =>{
+    db('staff').count('name as id')
+    .then(member =>{
+        members = (member);
+        res.status(200).json(member);
+    })
+    .catch(err =>{
+        console.log(members)
+        console.log(err);
+    })
+});
+//Get Number of visitors 
 
-    var mailing = {
-        from: "xpressdreams.ng@gmail.com",
-        to,
-        subject,
-        text
-    }
-    console.log(mailing);
-    const transporter = nodeMailer.createTransport({
-        service:'gmail',
-        auth:{
-            user:'xpressdreams.ng@gmail.com',
-            pass:'<xpressdreams/>'
-        }
-    });
-    transporter.sendMail(mailing, (err, info) =>{
-       
-        if(err){
-            console.log('Error '+ err)
-        }else{
-            console.log(info.response);
-        
-        }
+app.get('/visitors', (req, res) =>{
+    db('guest').count('name as id')
+    .then(member =>{
+        visitors = member;
+        res.status(200).json(member);
+    })
+    .catch(err =>{
+        console.log(visitors)
+        console.log(err);
     })
 })
 
 app.listen(PORT || '5001',()=>{console.log(`Server started!`)});
-;
+

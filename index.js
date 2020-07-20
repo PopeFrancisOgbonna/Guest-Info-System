@@ -14,7 +14,7 @@ const viewGuest = require('./models/handleGuest');
 const db = knex({
     client: 'pg',
     connectionString: process.env.DATABASE_URL,
-    ssl: true
+    ssl:true
 });
 
 const app = express();
@@ -49,7 +49,6 @@ router.get('/info',(req,res)=>{
 app.post('/register',(req, res)=>{
    registerHandle.register(req,res,db)
 });
-// Staff Registration by Admin Postgress Database
 app.post('/addstaff',(req, res)=>{
    registerHandle.regStaff(req, res, db);
 });

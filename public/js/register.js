@@ -10,7 +10,6 @@ submit.addEventListener('click', (e) =>{
     const password = document.querySelector('#regPass').value;
     const confirmPassword = document.querySelector('#pass1').value;
 
-    console.log(password);
     if(password !== confirmPassword){
         warning.innerHTML= 'Password do not match';
         warning.style.color = 'red';

@@ -11,6 +11,7 @@ const router = require('./controlers/route');
 const registerHandle = require('./models/registerHandle');
 const loginHandle = require('./models/loginHandle');
 const viewGuest = require('./models/handleGuest');
+require('dotenv').config();
 
 const db = knex({
     client: 'pg',

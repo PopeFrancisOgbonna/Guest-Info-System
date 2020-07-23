@@ -12,7 +12,7 @@ const register = (req, res, db) =>{
                 if(err) {
                     console.log(err);
                     return res.status(400).send({Error:err})}
-                if(result){
+                if(result.rowCount.length){
                     console.log(result);
                     res.status(200).send('Registration was Successfull!!');
                 }else{

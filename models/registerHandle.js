@@ -4,14 +4,14 @@ const register = (req, res, db) =>{
     const confirm = req.body.password1;
     const post ='Staff';
     if(name && password ){
-            let query = 'insert into user (name,password) values ($1,$2,$3)';
+            let query = 'insert into user (name,post,password) values ($1,$2,$3)';
         if(password !== confirm){
             return res.send('Error: Password do not Match!')
         }else{
-            db.query(query, (err, result)=>{
+            db.query(query,[name,post,password] (err, result)=>{
                 if(err) {
                     console.log(err);
-                    return res.status(400).send(err)}
+                    return res.status(400).send({Error:err})}
                 if(result.length){
                     res.status(200).send('Registration was Successfull!!');
                 }else{

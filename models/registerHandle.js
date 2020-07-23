@@ -8,7 +8,7 @@ const register = (req, res, db) =>{
         if(password !== confirm){
             return res.send('Error: Password do not Match!')
         }else{
-            db.query(query,[name,post,password] (err, result)=>{
+            db.query(query,[name,post,password], (err, result)=>{
                 if(err) {
                     console.log(err);
                     return res.status(400).send({Error:err})}

@@ -4,21 +4,28 @@ const register = (req, res, db) =>{
     const confirm = req.body.password1;
     const post ='Staff';
     if(name && password ){
-            // let query = 'insert into user (name,password) values (?,?)';
+            let query = 'insert into user (name,password) values ($1,$2,$3)';
         if(password !== confirm){
             return res.send('Error: Password do not Match!')
         }else{
-            db('staff')
-                .returning('id')
-                .insert({name,post,password})
-                .then(staff =>{
-                    if(staff.length){
-                        res.status(200).send('Registration was Successfull!!');
-                    }else{
-                        res.status(400).send('Error: Unable to Register. Try again later!');
-                    }
-                })
-                .catch(err =>console.log(err));
+            db.query(query, (err, result)=>{
+                if(result.length){
+                    res.status(200).send('Registration was Successfull!!');
+                }else{
+                    res.status(400).send('Error: Unable to Register. Try again later!');
+                }
+            })
+            // db('staff')
+            //     .returning('id')
+            //     .insert({name,post,password})
+            //     .then(staff =>{
+            //         if(staff.length){
+            //             res.status(200).send('Registration was Successfull!!');
+            //         }else{
+            //             res.status(400).send('Error: Unable to Register. Try again later!');
+            //         }
+            //     })
+            //     .catch(err =>console.log(err));
         }
     }
 };

@@ -14,10 +14,10 @@ const viewGuest = require('./models/handleGuest');
 
 const db = knex({
     client: 'pg',
-    connectionString:{
-    DATABASE_URL: 'postgres://hbniqsbyvfwzqh:dd633e95a8a56e83ded7ebb139137033984a9c744f02b8d4a3c30be1209ca84a@ec2-52-20-248-222.compute-1.amazonaws.com:5432/d4civi53hooh6m',
-    ssl:true
-}
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
 
 const app = express();
@@ -106,5 +106,5 @@ app.get('/visitors', (req, res) =>{
     })
 })
 
-app.listen(PORT || '5001',()=>{console.log(`Server started!`)});
+app.listen(PORT || '5001',()=>{console.log(`Server started!${PORT}`)});
 

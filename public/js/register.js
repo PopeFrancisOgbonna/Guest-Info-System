@@ -26,7 +26,6 @@ submit.addEventListener('click', (e) =>{
             password,
             password1:confirmPassword
         }
-        console.log(process.env.DATABASE_URL);
         fetch('/register',{
             method:'post',
             headers:{'content-type':'application/json'},

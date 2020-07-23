@@ -16,9 +16,7 @@ require('dotenv').config();
 const db = knex({
     client: 'pg',
     connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
-    }
+    ssl:true
 });
 
 const app = express();
@@ -51,6 +49,7 @@ router.get('/info',(req,res)=>{
 // })
 // Port request
 app.post('/register',(req, res)=>{
+    console.log(process.env.DATABASE_URL);
    registerHandle.register(req,res,db)
 });
 app.post('/addstaff',(req, res)=>{

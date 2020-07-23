@@ -4,7 +4,7 @@ const register = (req, res, db) =>{
     const confirm = req.body.password1;
     const post ='Staff';
     if(name && password ){
-            let query = 'insert into user (name,post,password) values ($1,$2,$3)';
+            let query = 'insert into staff (name,post,password) values ($1,$2,$3)';
         if(password !== confirm){
             return res.send('Error: Password do not Match!')
         }else{

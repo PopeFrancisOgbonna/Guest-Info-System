@@ -13,7 +13,7 @@ const register = (req, res, db) =>{
                     console.log(err);
                     return res.status(400).send({Error:err})}
                 if(result.rowCount.length){
-                    console.log(result);
+                    console.log(result.rowCount.length);
                     res.status(200).send('Registration was Successfull!!');
                 }else{
                     res.status(400).send('Error: Unable to Register. Try again later!');

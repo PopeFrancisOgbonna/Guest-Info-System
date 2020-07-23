@@ -5,7 +5,7 @@ const cors = require('cors');
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const PORT = process.env.PORT;
-const {Client} = require('pg');
+const pg = require('pg');
 const knex = require('knex');
 const router = require('./controlers/route');
 const registerHandle = require('./models/registerHandle');
@@ -13,12 +13,21 @@ const loginHandle = require('./models/loginHandle');
 const viewGuest = require('./models/handleGuest');
 require('dotenv').config();
 
-const db = new Client({
-    connectionString: 'postgres://hbniqsbyvfwzqh:dd633e95a8a56e83ded7ebb139137033984a9c744f02b8d4a3c30be1209ca84a@ec2-52-20-248-222.compute-1.amazonaws.com:5432/d4civi53hooh6m',
-    ssl: {
-        rejectUnauthorized: false
-      }
-});
+const isProduction = process.env.NODE_ENV === 'production';
+const connectionString = `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}`;
+const db = new pg.Pool({
+    connectionString: isProduction ? process.env.DATABASE_URL : connectionString,
+    ssl: isProduction,
+  });
+  db.on('connect', () => {
+    console.log('Teamwork Database connected successfully!');
+  });
+// const db = new Client({
+//     connectionString: 'postgres://hbniqsbyvfwzqh:dd633e95a8a56e83ded7ebb139137033984a9c744f02b8d4a3c30be1209ca84a@ec2-52-20-248-222.compute-1.amazonaws.com:5432/d4civi53hooh6m',
+//     ssl: {
+//         rejectUnauthorized: false
+//       }
+// });
 
 const app = express();
 

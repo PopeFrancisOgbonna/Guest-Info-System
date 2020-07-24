@@ -2,3 +2,5 @@
 "sendgrid.env" 
 "sendgrid.env" 
 "sendgrid.env" 
+.env 
+sendgrid.env 

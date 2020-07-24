@@ -75,7 +75,7 @@ record.addEventListener('click', ()=>{
     }).then(response=> response.json())
     .then(data =>{
         if(data.length){
-            data[0].Date = data[0].Date.split("T")[0];
+            data[0].date = data[0].date.split("T")[0];
             warning2.innerHTML ='';
             const table = document.querySelector('#Table');
             const datahead = Object.keys(data[0]);
@@ -110,7 +110,7 @@ search.addEventListener('click',()=>{
     }).then(response =>response.json())
     .then(data =>{
         if(data.length){
-            data[0].Date = data[0].Date.split("T")[0];
+            data[0].date = data[0].date.split("T")[0];
             warning2.innerHTML= '';
             const datahead = Object.keys(data[0]);
             

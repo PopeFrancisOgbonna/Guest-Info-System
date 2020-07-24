@@ -1,31 +1,29 @@
 const guests = (req, res, db) =>{
-    db.select('name','email','phone','whom_to_see as Whom To See','purpose_of_visit as Purpose Of Visit','arrival_time as Arrival Time','departure_time as Departure Time','date_visited as Date')
-        .from('guest')
-        .then(user =>{
-            if(user.length){
-                res.status(200).json(user);
-            }else{
-                res.status(400).send('Error getting users')
-            }
-        })
-        .catch(err =>console.log(err));
+    let query ='select name,email,phone,(whom_to_see) as "Whom To See",(purpose_of_visit) as "Purpose Of Visit",(arrival_time) as "Arrival Time",(departure_time) as "Departure Time",date(date_visited) as Date from guest';
+    db.query(query, (err, result) =>{
+        if(err) return res.status(404).send('Error getting Gusests');
+        if(result.rows.length){
+            res.status(200).json(result.rows);
+        }else{
+            res.status(400).send('Error getting users')
+        }
+    })    
 }
 
 const search = (req, res, db) =>{
-    const {name} = req.params;
+    var {name} = req.params;
+    name = name.toLowerCase();
     if(name){
-        db.select('name','email','phone','whom_to_see as Whom To See','purpose_of_visit as Purpose Of Visit','arrival_time as Arrival Time','departure_time as Departure Time','date_visited as Date')
-        .from('guest')
-        .where('name',name)
-        .then(user =>{
-            console.log(user)
-            if(user.length){
-                res.status(200).json(user);
+        let query ='select name,email,phone,(whom_to_see) as "Whom To See",(purpose_of_visit) as "Purpose Of Visit",(arrival_time) as "Arrival Time",(departure_time) as "Departure Time",(select DATE(date_visited)) as Date from guest where lower(name)=$1';
+        db.query(query,[name], (err, result) =>{
+            console.log(err)
+            if(err) return res.status(404).send('Error getting Gusests');
+            if(result.rows.length){
+                res.status(200).json(result.rows);
             }else{
-                res.status(400).send('Error getting user!')
+                res.status(400).send('Error getting users')
             }
-        })
-        .catch(err =>console.log(err));
+        }) 
     }
 }
 

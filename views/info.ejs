@@ -2,24 +2,18 @@
 <html lang="en">
 <head>
     <%- include('partials/head') %>
+    <link rel="stylesheet" href="css/info.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <%- include('partials/navigation') %> 
-            <style>
-                .mail{
-                    border: 2px solid #8f8e8e;
-                    padding: 5px;
-                    border-radius: 10px;
-                }
-            </style>
+            <%- include('partials/navigation') %>
         </header>
         <div class="row">
             <div class="col-md-3 col-sm-12">
                 <div class="text-center">
                    <img src="img/user.ico" alt="user-icon" id="icon" class="fluid">
-                   <p class="text-center"><%= name %></p> 
+                   <p class="text-center" id="user"><%= name %></p> 
                 </div>
                 <div id="ops">
                     <button id="staff" class="btn btn-lg btn-info">Register Staff</button>

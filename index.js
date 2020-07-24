@@ -4,9 +4,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 const pg = require('pg');
-const knex = require('knex');
 const router = require('./controlers/route');
 const registerHandle = require('./models/registerHandle');
 const loginHandle = require('./models/loginHandle');
@@ -16,20 +15,12 @@ require('dotenv').config();
 const isProduction = process.env.NODE_ENV === 'production';
 const connectionString = `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}`;
 const db = new pg.Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
-      }
+    connectionString:isProduction ? process.env.DATABASE_URL : connectionString,
+    ssl:isProduction?{rejectUnauthorized: false} :false
   });
   db.on('connect', () => {
     console.log('Teamwork Database connected successfully!');
   });
-// const db = new Client({
-//     connectionString: 'postgres://hbniqsbyvfwzqh:dd633e95a8a56e83ded7ebb139137033984a9c744f02b8d4a3c30be1209ca84a@ec2-52-20-248-222.compute-1.amazonaws.com:5432/d4civi53hooh6m',
-//     ssl: {
-//         rejectUnauthorized: false
-//       }
-// });
 
 const app = express();
 
@@ -42,26 +33,24 @@ app.use('/',router);
 
 //image file (static files)
 app.use('/img',express.static(__dirname + 'public/img'));
-app.use('/js',express.static(__dirname + 'public/js'))
-// const head = require(__dirname + 'public/js/head');
+app.use('/js',express.static(__dirname + 'public/js'));
 
 //Routes
-
+let user;
+router.get('/info',(req,res)=>{
+    res.render('info',{name:user.name});
+})
 let visitors;
 let members;
 app.get('/dashboard', (req, res) =>{
     res.render('admin')
 })
-let r;
-router.get('/info',(req,res)=>{
-    res.render('info',{name:r.name});
-})
+
 // app.get('*',(req, res) =>{
 //     res.status(404).render('errors');
 // })
 // Port request
 app.post('/register',(req, res)=>{
-    console.log(process.env.DATABASE_URL);
    registerHandle.register(req,res,db)
 });
 app.post('/addstaff',(req, res)=>{
@@ -74,7 +63,23 @@ app.post('/addguest',(req, res)=>{
 var table;
 //Postgress database  
 app.post('/login', (req, res) =>{
-    loginHandle.login(req, res, db);
+    
+    const name = req.body.name;
+    const password = req.body.password;
+    let query ='select * from staff where name =$1 and password = $2';
+    db.query(query,[name,password], (err, result) =>{
+        if(err) {
+            console.log(err);
+            return res.status(400).send('Invalid login details!');
+        }
+        if(result.rows.length){
+            user = result.rows[0];
+        res.status(200).redirect('/info');
+        }else{
+            res.status(400).send('Incorrect Password and Username!');
+        }
+    })
+   
 })
 //Get all Guest from Database
 app.get('/users',(req, res)=>{
@@ -94,29 +99,19 @@ app.post('/admin', (req, res) =>{
 });
 //Get Number of staff/members
 app.get('/members',(req, res) =>{
-    db('staff').count('name as id')
-    .then(member =>{
-        members = (member);
-        res.status(200).json(member);
-    })
-    .catch(err =>{
-        console.log(members)
-        console.log(err);
+    db.query('select count(*) from staff', (error, result) =>{
+        if(error) return res.status(400).send('User not Found.');
+        res.status(200).json(result.rows);
     })
 });
 //Get Number of visitors 
 
 app.get('/visitors', (req, res) =>{
-    db('guest').count('name as id')
-    .then(member =>{
-        visitors = member;
-        res.status(200).json(member);
-    })
-    .catch(err =>{
-        console.log(visitors)
-        console.log(err);
+    db.query('select count(*) from guest', (error, result) =>{
+        if(error) return res.status(400).send('User not Found.');
+        res.status(200).json(result.rows);
     })
 })
 
-app.listen(PORT || '5001',()=>{console.log(`Server started!${PORT}`)});
+app.listen(PORT,()=>{console.log(`Server started!${PORT}`)});
 

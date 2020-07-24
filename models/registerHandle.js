@@ -12,24 +12,12 @@ const register = (req, res, db) =>{
                 if(err) {
                     console.log(err);
                     return res.status(400).send({Error:err})}
-                if(result.rowCount.length){
-                    console.log(result.rowCount.length);
+                if(result.rowCount > 0){
                     res.status(200).send('Registration was Successfull!!');
                 }else{
                     res.status(400).send('Error: Unable to Register. Try again later!');
                 }
             })
-            // db('staff')
-            //     .returning('id')
-            //     .insert({name,post,password})
-            //     .then(staff =>{
-            //         if(staff.length){
-            //             res.status(200).send('Registration was Successfull!!');
-            //         }else{
-            //             res.status(400).send('Error: Unable to Register. Try again later!');
-            //         }
-            //     })
-            //     .catch(err =>console.log(err));
         }
     }
 };
@@ -40,20 +28,20 @@ const regStaff = (req, res, db) =>{
     const post =req.body.post;
     if(name && password ){
        if(password !== confirm){
-           console.log('pass '+password);
-           console.log(confirm)
            res.status(400).send('Error: Password do not match!');
            return;
         }
-        //The query inserts a record and returns the ID of it
-        db.insert([{name,post,password}],['id']).into('staff')
-        .then(person =>{
-            console.log(person);
-            if(person.length){
+        //The query inserts a record to staff
+        let query = 'insert into staff (name,post,password) values ($1,$2,$3)';
+        db.query(query,[name,post,password], (err, result) =>{
+            if(err) return res.status(404).send({Error:'Oops! Something went wrong.'})
+            if(result.rowCount > 0){
                 res.status(200).send('Registrarion was Successful!!');
+            }else{
+                res.status(400).send('Unable to complete Operation.')
             }
         })
-        .catch(error =>console.log(error));
+            
     }
 }
 //Guest Registration
@@ -67,17 +55,15 @@ const addGuest = (req, res, db) =>{
     const depart = req.body.departure;
     const date = req.body.date;
     if(name && email && phone && whom && purpose && arrival && depart && date){
-        db('guest')
-            .returning('id')
-            .insert({name,email,phone,whom_to_see:whom,purpose_of_visit:purpose,arrival_time:arrival,departure_time:depart,date_visited:date})
-            .then(guest =>{
-                if(guest.length){
-                    res.status(200).send('Registration was Successful.');
-                }else{
-                    res.status(400).send('Error: Unable to complete action.');
-                }
-            })
-            .catch(err =>console.log(err));
+        let query ='insert into guest (name,email,phone,whom_to_see,purpose_of_visit,arrival_time,departure_time,date_visited) value($1,$2,$3,$4,$5,$6,$7,$8)';
+        db.query(query,[name,email,phone,whom,purpose,arrival,depart,date], (err, result) =>{
+            if(err) return res.status(400).send(err);
+            if(result.rowCount > 0){
+                res.status(200).send('Registration was Successful.');
+            }else{
+                res.status(400).send('Error: Unable to complete action.');
+            }
+        })
     }
 }
 module.exports = {

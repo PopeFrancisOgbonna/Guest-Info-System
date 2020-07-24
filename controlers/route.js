@@ -4,6 +4,7 @@ const router = express.Router();
 
 
 
+
 router.get('/',(req,res)=>{
     res.render('index',{text:'Relaxation and Comfort',company:'Xpress Dreams Technology',pass:'hello' });
 });
@@ -26,6 +27,7 @@ router.get('/admin',(req, res,err)=>{
     // if(res.status !== 200)return res.render('error');
     res.render('adminlogin')
 });
+
 
 
 module.exports = router;

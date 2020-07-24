@@ -1,7 +1,10 @@
 const guests = (req, res, db) =>{
     let query ='select name,email,phone,(whom_to_see) as "Whom To See",(purpose_of_visit) as "Purpose Of Visit",(arrival_time) as "Arrival Time",(departure_time) as "Departure Time",date(date_visited) as Date from guest';
     db.query(query, (err, result) =>{
-        if(err) return res.status(404).send('Error getting Gusests');
+        if(err){ 
+            console.log(err)
+            return res.status(404).send('Error getting Gusests');
+        }
         if(result.rows.length){
             res.status(200).json(result.rows);
         }else{

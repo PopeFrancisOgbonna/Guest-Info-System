@@ -57,7 +57,9 @@ const addGuest = (req, res, db) =>{
     if(name && email && phone && whom && purpose && arrival && depart && date){
         let query ='insert into guest (name,email,phone,whom_to_see,purpose_of_visit,arrival_time,departure_time,date_visited) value($1,$2,$3,$4,$5,$6,$7,$8)';
         db.query(query,[name,email,phone,whom,purpose,arrival,depart,date], (err, result) =>{
-            if(err) return res.status(400).send(err);
+            if(err) {
+                console.log('Error from query '+err)
+                return res.status(400).send(err);}
             if(result.rowCount > 0){
                 res.status(200).send('Registration was Successful.');
             }else{

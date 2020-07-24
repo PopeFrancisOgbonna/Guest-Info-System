@@ -43,7 +43,7 @@ const mail = (req, res, sgMail) =>{
        text
      };
      sgMail.send(msg).then( ()=>{
-         res.status(200).send('Message Sent');
+             res.status(200).send('Message Sent');
      }).catch(err =>console.log(err.response.body));
 }
 module.exports = {

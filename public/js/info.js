@@ -286,7 +286,10 @@ sendMail.addEventListener('click',(e)=>{
         headers:{"content-type":"application/json"},
         body:JSON.stringify(data)
     })
-    .then( ()=>{
+    .then( (response)=>{
+        if(response){
+            console.log(response);
+        }
         notice.innerHTML ='Message Sent Successfully!';
         notice.style.color = 'green';
         to.value ='';

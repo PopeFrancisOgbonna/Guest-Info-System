@@ -32,9 +32,11 @@ submit.addEventListener('click', (e) =>{
             body:JSON.stringify(data)
         }).then(response =>{
             if(response.status === 200){
-                console.log(response);
                 warning.innerHTML='Registration was Successful';
-                warning.style.color='green'
+                warning.style.color='green';
+                setTimeout(() => {
+                    location.assign('/login');
+                }, 4000);
             }else{
                 warning.innerHTML ='Something went Wrong. Please try again!';
                 warning.style.color ='red';

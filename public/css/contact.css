@@ -1,0 +1,17 @@
+h3{
+    text-transform: uppercase;
+    margin: 10px auto;
+}
+form{
+    padding: 5px;
+    border-radius: 8px;
+    margin: 15px auto;
+    /* background: linear-gradient(to right, #79f779, rgb(248, 99, 99)); */
+    box-shadow: 0 0 14px #a3a2a2;
+}
+form div{
+    padding: 1px;
+}
+form .btn{
+    background-color: #41b1fc;
+}

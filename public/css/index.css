@@ -2,7 +2,16 @@
     display: none;
 }
 /* Index page css codes */
-
+#header{
+    text-transform: uppercase;
+}
+.figure{
+    margin: 3px auto;
+}
+figure img{
+    max-height: 350px;
+    width: auto;
+}
 /* Registration page css code */
 .side{
     background: linear-gradient(to right, #44ccdd,#4d4d4d);
